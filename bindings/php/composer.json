@@ -1,0 +1,22 @@
+{
+  "name": "octri/openapi-parser",
+  "description": "PHP bindings for Octri's Rust OpenAPI parser",
+  "type": "library",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=8.1",
+    "ext-ffi": "*",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "homepage": "https://github.com/octridev/octri-openapi-parser",
+  "support": {
+    "issues": "https://github.com/octridev/octri-openapi-parser/issues",
+    "source": "https://github.com/octridev/octri-openapi-parser"
+  }
+}

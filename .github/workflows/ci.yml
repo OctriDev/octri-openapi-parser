@@ -1,0 +1,135 @@
+name: Parser checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  native:
+    continue-on-error: ${{ matrix.os == 'windows-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            reference/typescript/package-lock.json
+      - run: rustup show active-toolchain
+      - run: npm ci
+      - run: npm ci --prefix reference/typescript
+      - run: npm run build --prefix reference/typescript
+      - run: node scripts/verify-schemas.mjs
+      - run: node scripts/cargo.mjs fmt --all -- --check
+      - run: node scripts/cargo.mjs clippy --workspace --all-targets --locked -- -D warnings
+      - run: node scripts/cargo.mjs test --workspace --locked
+      - run: npm run build:node
+      - run: npm run test:node
+      - run: npm run test:parity
+      - run: npm run test:swagger
+      - run: npm run test:validation-contract
+      - run: npm run test:concurrency
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm run build:wasm
+      - run: npm run test:package
+      - run: npm run format:check
+      - run: npm audit
+      - run: node scripts/cargo.mjs build --release --locked -p octri-parser-cli
+      - run: npm run pack:release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: parser-${{ runner.os }}-${{ runner.arch }}
+          path: artifacts/release/
+          retention-days: 7
+  browser:
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - run: rustup show active-toolchain
+      - run: npm ci
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm run build:wasm
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      - run: npm run test:browser
+        env:
+          OCTRI_BROWSER: ${{ matrix.engine }}
+  public-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - run: npm ci
+      - run: npm ci --prefix reference/typescript
+      - run: node scripts/cargo.mjs build --release --locked -p octri-parser-cli
+      - run: npm run build:node
+      - run: npm run test:public-corpus
+  isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+      - run: docker build -f Dockerfile.check -t octri-parser-check:local .
+      - run: node scripts/isolation.mjs
+  advisories:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - run: rustup show active-toolchain
+      - run: cargo install cargo-audit --version 0.22.2 --locked
+      - run: cargo audit
+  language-bindings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - run: docker build --build-arg OCTRI_TARGET_ARCH=amd64 -f Dockerfile.bindings -t octri-parser-bindings:ci .
+      - run: docker run --rm octri-parser-bindings:ci
+      - run: docker build --build-arg OCTRI_TARGET_ARCH=amd64 -f Dockerfile.bindings-baselines -t octri-parser-bindings:baselines .
+      - run: |
+          container=$(docker create octri-parser-bindings:ci)
+          docker cp "$container:/parser/artifacts/bindings" binding-evidence
+          docker cp "$container:/parser/artifacts/release" binding-release
+          docker rm "$container"
+          baseline=$(docker create octri-parser-bindings:baselines)
+          docker cp "$baseline:/parser/artifacts/bindings" binding-baseline-evidence
+          docker rm "$baseline"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-language-bindings-linux
+          path: |
+            binding-evidence/results.json
+            binding-evidence/package-results.json
+            binding-evidence/jvm-advisories.json
+            binding-baseline-evidence/results.json
+            binding-baseline-evidence/package-results.json
+            binding-baseline-evidence/jvm-advisories.json
+            binding-release/
+          retention-days: 7

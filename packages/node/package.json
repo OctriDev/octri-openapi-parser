@@ -1,0 +1,63 @@
+{
+  "name": "@octri/openapi-parser-native",
+  "version": "0.1.4",
+  "description": "Node.js native bindings for Octri OpenAPI Parser, powered by Rust.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "OAI-LICENSE",
+    "index.cjs",
+    "index.d.cts",
+    "README.md",
+    "load-native.cjs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octridev/octri-openapi-parser.git",
+    "directory": "packages/node"
+  },
+  "homepage": "https://github.com/octridev/octri-openapi-parser#readme",
+  "bugs": {
+    "url": "https://github.com/octridev/octri-openapi-parser/issues"
+  },
+  "keywords": [
+    "openapi",
+    "swagger",
+    "rust",
+    "api",
+    "specification",
+    "openapi-parser",
+    "parser",
+    "json-schema",
+    "reference-resolution",
+    "node-api",
+    "native",
+    "nodejs"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "optionalDependencies": {
+    "@octri/openapi-parser-native-darwin-arm64": "0.1.4",
+    "@octri/openapi-parser-native-linux-x64": "0.1.4",
+    "@octri/openapi-parser-native-linux-arm64": "0.1.4"
+  }
+}

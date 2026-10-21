@@ -1,0 +1,33 @@
+# Compatibility checks only: use vendor-maintained runtimes for production.
+ARG BINDINGS_IMAGE=octri-parser-bindings:ci
+FROM python:3.8.20-bookworm@sha256:d411270700143fa2683cc8264d9fa5d3279fd3b6afff62ae81ea2f9d070e390c AS python38
+FROM eclipse-temurin:11-jdk-noble@sha256:82b78cb38df84009971601d16667cd1af118c281a79ae5064bf42ab8279d9f77 AS java11
+FROM php:8.1-cli-bookworm@sha256:482717722f08d9a6c2b4f98c40bfee6d7935bd1a17fef928881ecd5884dfd76e AS php81
+RUN apt-get update && apt-get install -y --no-install-recommends libffi-dev \
+    && docker-php-ext-install ffi && rm -rf /var/lib/apt/lists/*
+# Relocate PHP with its non-glibc dependencies. Keep the final image's libc.
+RUN mkdir -p /opt/php81/lib \
+    && cp /usr/local/bin/php /opt/php81/php \
+    && cp /usr/local/lib/php/extensions/*/ffi.so /opt/php81/ffi.so \
+    && ldd /opt/php81/php /opt/php81/ffi.so | awk '/=> \/.* \(/ {print $3}' | sort -u \
+      | while read library; do \
+          case "$library" in */libc.so.*|*/libm.so.*|*/libdl.so.*|*/libpthread.so.*) ;; \
+            *) cp -L "$library" /opt/php81/lib/ ;; esac; \
+        done
+FROM ${BINDINGS_IMAGE}
+ARG OCTRI_TARGET_ARCH
+RUN test -n "$OCTRI_TARGET_ARCH" && test "$(dpkg --print-architecture)" = "$OCTRI_TARGET_ARCH"
+COPY --from=python38 /usr/local /opt/python38
+COPY --from=java11 /opt/java/openjdk /opt/java11
+COPY --from=php81 /opt/php81 /opt/php81
+RUN mkdir -p /opt/compat/bin \
+    && printf '%s\n' '#!/bin/sh' 'LD_LIBRARY_PATH=/opt/python38/lib exec /opt/python38/bin/python3.8 "$@"' > /opt/compat/bin/python3 \
+    && printf '%s\n' '#!/bin/sh' 'LD_LIBRARY_PATH=/opt/php81/lib exec /opt/php81/php -n -d extension=/opt/php81/ffi.so -d ffi.enable=true "$@"' > /opt/compat/bin/php \
+    && chmod +x /opt/compat/bin/*
+ENV JAVA_HOME=/opt/java11
+ENV PATH="/opt/compat/bin:/opt/java11/bin:${PATH}"
+COPY . .
+RUN python3 --version && php --version && java -version \
+    && node scripts/build-bindings.mjs && node scripts/audit-bindings.mjs \
+    && node scripts/test-bindings.mjs && node scripts/pack-bindings.mjs \
+    && node scripts/test-binding-packages.mjs

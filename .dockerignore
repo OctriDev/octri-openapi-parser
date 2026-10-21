@@ -1,0 +1,17 @@
+.git
+target
+node_modules
+**/node_modules
+**/dist
+artifacts
+packages/node/*.node
+packages/browser/pkg
+.DS_Store
+**/target
+**/.build
+**/.dart_tool
+**/__pycache__
+**/*.egg-info
+bindings/python/build
+bindings/python/dist
+bindings/ruby/*.gem

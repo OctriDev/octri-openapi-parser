@@ -1,0 +1,74 @@
+{
+  "name": "@octri/openapi-parser",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Source-aware OpenAPI parsing, validation, reference resolution, bundling and inspection",
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build": "tsup && node scripts/licenses.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && vitest run",
+    "test:coverage": "npm run build && vitest run --coverage",
+    "check": "npm run typecheck && npm test",
+    "bench": "tsx scripts/benchmark.ts",
+    "test:package": "node scripts/package-smoke.mjs",
+    "format": "prettier --write src test scripts examples *.json *.ts *.md",
+    "format:check": "prettier --check src test scripts examples *.json *.ts *.md"
+  },
+  "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "16.0.3",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "buffer": "^6.0.3",
+    "ipaddr.js": "2.2.0",
+    "yaml": "2.9.0",
+    "ajv-draft-04": "1.0.0"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "@redocly/openapi-core": "^2.64.0",
+    "@types/node": "^22.19.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "esbuild": "^0.28.1",
+    "prettier": "^3.9.10",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.5"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "octri-openapi": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES.txt",
+    "LICENSE"
+  ],
+  "overrides": {
+    "esbuild": "$esbuild"
+  }
+}

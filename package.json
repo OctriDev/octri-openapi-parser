@@ -1,0 +1,53 @@
+{
+  "name": "octri-openapi-parser-workspace",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build:node": "node scripts/build-node.mjs && node scripts/build-js.mjs",
+    "build:wasm": "node scripts/build-wasm.mjs && node scripts/build-js.mjs",
+    "test:node": "node --test packages/node/test.mjs",
+    "test:browser": "node scripts/browser-test.mjs",
+    "test:parity": "node scripts/parity.mjs",
+    "format": "prettier --write packages scripts *.json *.md",
+    "format:check": "prettier --check packages scripts *.json *.md",
+    "test:package": "node scripts/package-smoke.mjs",
+    "notices": "node scripts/notices.mjs",
+    "test:swagger": "node scripts/swagger-parity.mjs",
+    "bench": "node scripts/benchmark.mjs",
+    "test:corpus": "node --expose-gc scripts/corpus.mjs",
+    "bench:native": "node scripts/native-benchmark.mjs",
+    "test:public-corpus": "node scripts/public-corpus.mjs",
+    "bench:scaling": "node scripts/scaling.mjs",
+    "test:concurrency": "node --expose-gc scripts/concurrency.mjs",
+    "check:native": "node scripts/check-native.mjs",
+    "test:browsers": "node scripts/check-browsers.mjs",
+    "test:isolation": "node scripts/isolation.mjs",
+    "pack:release": "node scripts/pack-release.mjs",
+    "build:bindings": "node scripts/build-bindings.mjs",
+    "test:bindings": "node scripts/test-bindings.mjs",
+    "audit:bindings": "node scripts/audit-bindings.mjs",
+    "pack:bindings": "node scripts/pack-bindings.mjs",
+    "test:binding-packages": "node scripts/test-binding-packages.mjs",
+    "test:validation-contract": "node scripts/validation-contract.mjs",
+    "verify:schemas": "node scripts/verify-schemas.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "playwright": "^1.58.0",
+    "prettier": "^3.9.0",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/octridev/octri-openapi-parser.git"
+  },
+  "homepage": "https://github.com/octridev/octri-openapi-parser#readme",
+  "bugs": {
+    "url": "https://github.com/octridev/octri-openapi-parser/issues"
+  }
+}

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "octri-openapi-parser"
+version = "0.1.0"
+requires-python = ">=3.8"
+description = "Python bindings for Octri's Rust OpenAPI parser"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+octri_parser = ["py.typed"]
+
+[project.urls]
+Repository = "https://github.com/octridev/octri-openapi-parser"
+Issues = "https://github.com/octridev/octri-openapi-parser/issues"

@@ -1,0 +1,141 @@
+{
+  "notes": "Official provider snapshots. Downloads are cached outside source control; upstream licenses apply. Results are observations, not assumptions of validity.",
+  "entries": [
+    {
+      "name": "github",
+      "repository": "https://github.com/github/rest-api-description",
+      "commit": "4f6cdff5b06bd82b44dd16b32bd70a4f91cbb1ac",
+      "path": "descriptions/api.github.com/api.github.com.json",
+      "url": "https://raw.githubusercontent.com/github/rest-api-description/4f6cdff5b06bd82b44dd16b32bd70a4f91cbb1ac/descriptions/api.github.com/api.github.com.json",
+      "filename": "github.json",
+      "bytes": 13499183,
+      "sha256": "2d18c7b121c209aa40a5c92ea462af1f7955603fc3ec530ab0466549498d14cf",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "stripe",
+      "repository": "https://github.com/stripe/openapi",
+      "commit": "8b815c5b2d692979cfbca80837f405dd68cf94b4",
+      "path": "openapi/spec3.json",
+      "url": "https://raw.githubusercontent.com/stripe/openapi/8b815c5b2d692979cfbca80837f405dd68cf94b4/openapi/spec3.json",
+      "filename": "stripe.json",
+      "bytes": 8317513,
+      "sha256": "7cff4cc46d0654101a36a3302f7544640f5f73e4f3cad6f264f0e23c19fa1776",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "discord",
+      "repository": "https://github.com/discord/discord-api-spec",
+      "commit": "ed014089afa986f2b532ae081c456a85de074d0c",
+      "path": "specs/openapi.json",
+      "url": "https://raw.githubusercontent.com/discord/discord-api-spec/ed014089afa986f2b532ae081c456a85de074d0c/specs/openapi.json",
+      "filename": "discord.json",
+      "bytes": 1193084,
+      "sha256": "79e3faff046cd35e432e4cbaacd457c5f4b0e01149c541c010366191e38bc18a",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "asana",
+      "repository": "https://github.com/Asana/openapi",
+      "commit": "dbe7d01f9fd976d33dcf117ed340a9fd59bebae7",
+      "path": "defs/asana_oas.yaml",
+      "url": "https://raw.githubusercontent.com/Asana/openapi/dbe7d01f9fd976d33dcf117ed340a9fd59bebae7/defs/asana_oas.yaml",
+      "filename": "asana.yaml",
+      "bytes": 3230964,
+      "sha256": "07ab7185b4776f3c854781d07b39e2c37418e0549fef390721982ff659657ac1",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "slack",
+      "repository": "https://github.com/slackapi/slack-api-specs",
+      "commit": "bc08db49625630e3585bf2f1322128ea04f2a7f3",
+      "path": "web-api/slack_web_openapi_v2_without_examples.json",
+      "url": "https://raw.githubusercontent.com/slackapi/slack-api-specs/bc08db49625630e3585bf2f1322128ea04f2a7f3/web-api/slack_web_openapi_v2_without_examples.json",
+      "filename": "slack.json",
+      "bytes": 1039581,
+      "sha256": "8b92da26a3c5b11d20042a9f36d81f1fa6fc9382c5ddc471babb68b91936bc3a",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "twilio",
+      "repository": "https://github.com/twilio/twilio-oai",
+      "commit": "d9775142962ea67d5f3d50c5021a23ae6d330c5b",
+      "path": "spec/json/twilio_api_v2010.json",
+      "url": "https://raw.githubusercontent.com/twilio/twilio-oai/d9775142962ea67d5f3d50c5021a23ae6d330c5b/spec/json/twilio_api_v2010.json",
+      "filename": "twilio.json",
+      "bytes": 1878657,
+      "sha256": "bfdf249a129819af274d6bdc7672156ea3416ad48670a6f0544def6ef386ba87",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "All four validators accept this snapshot."
+    },
+    {
+      "name": "kubernetes",
+      "repository": "https://github.com/kubernetes/kubernetes",
+      "commit": "63eee90da226b6a813e58b2dac53c2fc2236481d",
+      "path": "api/openapi-spec/swagger.json",
+      "url": "https://raw.githubusercontent.com/kubernetes/kubernetes/63eee90da226b6a813e58b2dac53c2fc2236481d/api/openapi-spec/swagger.json",
+      "filename": "kubernetes.json",
+      "bytes": 4293127,
+      "sha256": "915d4f73ee05c562ac2fec5e164bd6ab5adcbe55f05353f2b628ebe1a7fee929",
+      "expected": {
+        "compatible": true,
+        "strict": true,
+        "swagger": true,
+        "node": true
+      },
+      "review": "A schema property named $ref remains property-map data. Octri and Swagger accept the property map."
+    },
+    {
+      "name": "cloudflare",
+      "repository": "https://github.com/cloudflare/api-schemas",
+      "commit": "ec19e9f82e219137a547ca40f48babe71c69e481",
+      "path": "openapi.json",
+      "url": "https://raw.githubusercontent.com/cloudflare/api-schemas/ec19e9f82e219137a547ca40f48babe71c69e481/openapi.json",
+      "filename": "cloudflare.json",
+      "bytes": 27423500,
+      "sha256": "d68f6e39c1b8c47a810e3d9e1d47d0a9f48da6e964d9686d71de419e390dfaa6",
+      "expected": {
+        "compatible": true,
+        "strict": false,
+        "swagger": true,
+        "node": true
+      },
+      "review": "Compatible Octri/Swagger accept the property map; strict Octri detects undefined security schemes."
+    }
+  ]
+}

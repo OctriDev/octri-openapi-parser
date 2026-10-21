@@ -1,0 +1,12 @@
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  SuggestExtensions: false
+
+# ABI/request literals are protocol definitions; keeping them together makes
+# ownership and error cleanup easier to audit than splitting them into helpers.
+Metrics/MethodLength:
+  CountAsOne: [array, hash, method_call]
+  Max: 20
+Metrics/AbcSize:
+  Max: 25

@@ -1,0 +1,27 @@
+[package]
+name = "octri-parser-ffi"
+description = "Versioned C ABI for Octri's native language bindings"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+octri-parser.workspace = true
+octri-parser-native.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+# Unsafe code is confined to this ABI boundary; the parser and native resolver
+# continue to forbid it. Every exported pointer function documents its contract.
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "deny"
+

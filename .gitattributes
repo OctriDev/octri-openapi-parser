@@ -1,0 +1,7 @@
+# Normalize authored source; preserve pinned reference and fixture bytes.
+* text=auto eol=lf
+reference/** -text whitespace=cr-at-eol
+fixtures/** -text whitespace=cr-at-eol
+**/THIRD_PARTY_NOTICES.md -text whitespace=cr-at-eol
+*.wasm binary
+*.node binary

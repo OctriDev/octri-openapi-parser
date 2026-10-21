@@ -1,0 +1,27 @@
+{
+  "valid-3.2.0": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Swagger Parser 13.1.0 does not support OpenAPI 3.2.0."
+  },
+  "literal-reference": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Literal example/default/extension refs remain data."
+  },
+  "relative-schema-id": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Octri resolves relative schema IDs and anchors."
+  },
+  "missing-path-parameter": {
+    "rustValid": false,
+    "swaggerValid": true,
+    "reason": "Compatible mode retains resolved path declaration checks."
+  },
+  "external-invalid-response": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Compatible mode permits generator-repairable external target shapes; strict mode rejects them."
+  }
+}

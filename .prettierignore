@@ -1,0 +1,10 @@
+reference/typescript/
+packages/dist/
+packages/*/dist/
+packages/browser/pkg/
+THIRD_PARTY_NOTICES.md
+packages/*/THIRD_PARTY_NOTICES.md
+packages/*/LICENSE
+packages/*/OAI-LICENSE
+artifacts/
+target/

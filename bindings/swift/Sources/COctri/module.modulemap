@@ -1,0 +1,5 @@
+module COctri [system] {
+    header "include/octri_parser.h"
+    link "octri_parser_ffi"
+    export *
+}

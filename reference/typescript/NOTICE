@@ -1,0 +1,21 @@
+Octri OpenAPI Parser
+
+Copyright (c) 2026 Octri contributors.
+Octri source is licensed under the Apache License, Version 2.0.
+Third-party components retain their original licenses and attribution.
+
+This project builds on maintained third-party standards tooling rather than
+claiming to independently implement every OpenAPI and JSON Schema dialect:
+- @apidevtools/json-schema-ref-parser: JSON Reference graph transformations (MIT)
+- OpenAPI Initiative schemas: version-specific document structure (Apache-2.0)
+- ajv-draft-04: draft-04 schema evaluation (MIT)
+- ajv: JSON Schema vocabulary/meta-schema checks (MIT)
+- buffer: scoped browser compatibility for the reference engine (MIT)
+- yaml: YAML 1.2 parsing, syntax trees and serialization (ISC)
+- ipaddr.js: IP address classification (MIT)
+
+The exact installed versions are pinned in package-lock.json. Installed package
+license files are authoritative. Transitive dependencies retain their licenses.
+Swagger Parser and Redocly are development-only comparison/validation tools, not
+the public API engine. Full production dependency license texts are collected in
+THIRD_PARTY_NOTICES.txt during the build.

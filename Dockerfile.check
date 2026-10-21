@@ -1,0 +1,17 @@
+FROM node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df AS node
+FROM rust:1.95.0-bookworm@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+WORKDIR /parser
+COPY package.json package-lock.json ./
+COPY packages/node/package.json packages/node/package.json
+COPY packages/browser/package.json packages/browser/package.json
+RUN npm ci --ignore-scripts
+COPY reference/typescript/package.json reference/typescript/package-lock.json reference/typescript/
+RUN npm ci --prefix reference/typescript --ignore-scripts
+COPY . .
+RUN node scripts/cargo.mjs build --release --locked -p octri-parser-cli \
+    && npm run check:native
+CMD ["target/release/octri-openapi", "--help"]

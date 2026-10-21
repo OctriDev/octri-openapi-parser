@@ -1,0 +1,32 @@
+{
+  "valid-3.2.0": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Swagger Parser 13.1.0 does not support OpenAPI 3.2.0."
+  },
+  "invalid-schema-keyword": {
+    "rustValid": false,
+    "swaggerValid": true,
+    "reason": "Rust checks standard JSON Schema keyword types in OpenAPI 3.1; minLength must be an integer."
+  },
+  "literal-reference": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Rust leaves example/default/extension payloads opaque; this Swagger fixture attempts to load a literal payload reference."
+  },
+  "relative-schema-id": {
+    "rustValid": true,
+    "swaggerValid": false,
+    "reason": "Rust indexes relative schema resource IDs and anchors; this Swagger version rejects the plain-name fragment."
+  },
+  "duplicate-operation-id": {
+    "rustValid": false,
+    "swaggerValid": true,
+    "reason": "Rust checks operationId uniqueness across the effective operation inventory."
+  },
+  "missing-path-parameter": {
+    "rustValid": false,
+    "swaggerValid": true,
+    "reason": "Rust checks that each path template variable has a declared path parameter."
+  }
+}
