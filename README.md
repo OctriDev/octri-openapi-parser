@@ -1,5 +1,7 @@
 # Octri OpenAPI Parser — Rust
 
+[Live demo](https://octri.dev/openapi-parser) · Free to try in your browser, no account required.
+
 A standalone OpenAPI parser with a Rust core, native command-line tool, Node-API
 bindings and browser WebAssembly. Parsing, references, source locations and
 OpenAPI semantics share one Rust implementation.

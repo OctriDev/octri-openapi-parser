@@ -46,7 +46,7 @@
     "type": "git",
     "url": "https://github.com/octridev/octri-openapi-parser.git"
   },
-  "homepage": "https://github.com/octridev/octri-openapi-parser#readme",
+  "homepage": "https://octri.dev/openapi-parser",
   "bugs": {
     "url": "https://github.com/octridev/octri-openapi-parser/issues"
   }

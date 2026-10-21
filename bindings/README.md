@@ -1,5 +1,7 @@
 # Native language bindings
 
+[Live demo](https://octri.dev/openapi-parser) · Free to try in your browser, no account required.
+
 The language set is TypeScript/JavaScript, Python, Go, Java, Kotlin, PHP, Ruby,
 Swift, Dart and Rust. Node and browser WASM keep their existing adapters.
 Rust uses `octri-parser-sdk` directly. Eight additional languages call a small

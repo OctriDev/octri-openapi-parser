@@ -1,6 +1,6 @@
 {
   "name": "@octri/openapi-parser-wasm",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Browser WebAssembly bindings for Octri OpenAPI Parser, powered by Rust.",
   "license": "Apache-2.0",
   "type": "module",
@@ -23,7 +23,7 @@
     "url": "git+https://github.com/octridev/octri-openapi-parser.git",
     "directory": "packages/browser"
   },
-  "homepage": "https://github.com/octridev/octri-openapi-parser#readme",
+  "homepage": "https://octri.dev/openapi-parser",
   "bugs": {
     "url": "https://github.com/octridev/octri-openapi-parser/issues"
   },

@@ -1,5 +1,7 @@
 # Octri OpenAPI Parser — Browser WASM
 
+[Live demo](https://octri.dev/openapi-parser) · Free to try in your browser, no account required.
+
 Parse, validate, inspect, bundle and dereference OpenAPI documents while preserving source locations, reference identity and exact numbers.
 
 Part of [octri-openapi-parser](https://github.com/octridev/octri-openapi-parser), maintained by [OctriDev](https://github.com/octridev). Licensed under Apache-2.0. Bundled dependencies retain their own licenses and notices.
