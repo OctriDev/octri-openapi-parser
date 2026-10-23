@@ -35,8 +35,11 @@ module OctriParser
   # every native response is copied and freed before returning to Ruby.
   class Parser
     MAX_REQUEST_BYTES = 128 * 1024 * 1024
+    # Platform gems carry the native library under lib/octri_parser/native.
+    BUNDLED_LIBRARY = File.join(__dir__, 'octri_parser', 'native',
+                                RUBY_PLATFORM.include?('darwin') ? 'liboctri_parser_ffi.dylib' : 'liboctri_parser_ffi.so')
 
-    def initialize(library)
+    def initialize(library = BUNDLED_LIBRARY)
       @library = Fiddle.dlopen(File.realpath(library))
       version = function('abi_version', [], Fiddle::TYPE_INT)
       raise LoadError, 'Expected Octri native ABI version 1' unless version.call == 1

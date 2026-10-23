@@ -1,5 +1,10 @@
-import COctri
 import Foundation
+
+#if canImport(Darwin)
+  import Darwin
+#else
+  import Glibc
+#endif
 
 public struct Source: Codable, Sendable {
   public let uri: String
@@ -27,11 +32,71 @@ public struct ParserError: Error, Sendable {
   public let diagnostics: JSONValue
 }
 
+/// The C ABI entry points of one loaded library. The library is never unloaded,
+/// so the function pointers stay valid for the life of the process.
+private struct NativeLibrary: @unchecked Sendable {
+  let abiVersion: @convention(c) () -> UInt32
+  let call: @convention(c) (UnsafePointer<UInt8>?, Int) -> OpaquePointer?
+  let data: @convention(c) (OpaquePointer?) -> UnsafeMutablePointer<UInt8>?
+  let length: @convention(c) (OpaquePointer?) -> Int
+  let free: @convention(c) (OpaquePointer?) -> Void
+
+  init(path: String) throws {
+    guard let handle = dlopen(path, RTLD_NOW | RTLD_LOCAL) else {
+      let reason = dlerror().map { String(cString: $0) } ?? path
+      throw ParserError(message: "Cannot load native library: \(reason)", diagnostics: .array([]))
+    }
+    func symbol<T>(_ name: String) throws -> T {
+      guard let address = dlsym(handle, name) else {
+        throw ParserError(message: "Native library lacks \(name)", diagnostics: .array([]))
+      }
+      return unsafeBitCast(address, to: T.self)
+    }
+    abiVersion = try symbol("octri_parser_abi_version")
+    call = try symbol("octri_parser_call")
+    data = try symbol("octri_parser_buffer_data")
+    length = try symbol("octri_parser_buffer_len")
+    free = try symbol("octri_parser_buffer_free")
+  }
+
+  /// The library this package bundles for the current platform.
+  static func bundled() throws -> String {
+    #if os(macOS) && arch(arm64)
+      let (platform, file) = ("darwin-arm64", "liboctri_parser_ffi.dylib")
+    #elseif os(Linux) && arch(x86_64)
+      let (platform, file) = ("linux-x64", "liboctri_parser_ffi.so")
+    #elseif os(Linux) && arch(arm64)
+      let (platform, file) = ("linux-arm64", "liboctri_parser_ffi.so")
+    #else
+      throw ParserError(
+        message: "No bundled native library for this platform; pass its path",
+        diagnostics: .array([]))
+    #endif
+    guard
+      let url = Bundle.module.url(
+        forResource: file, withExtension: nil, subdirectory: "native/\(platform)")
+    else {
+      throw ParserError(
+        message: "This build carries no native library for \(platform); pass its path",
+        diagnostics: .array([]))
+    }
+    return url.path
+  }
+}
+
 /// Stateless synchronous native binding. Reports and graph arenas use JSONValue;
 /// reference resolution is never repeated in Swift. Calls can run concurrently.
 public struct Parser: Sendable {
+  private let native: NativeLibrary
+
+  /// Loads the native library bundled with this package for the current platform.
   public init() throws {
-    guard octri_parser_abi_version() == 1 else {
+    try self.init(library: NativeLibrary.bundled())
+  }
+
+  public init(library: String) throws {
+    native = try NativeLibrary(path: library)
+    guard native.abiVersion() == 1 else {
       throw ParserError(message: "Expected Octri native ABI version 1", diagnostics: .array([]))
     }
   }
@@ -47,14 +112,14 @@ public struct Parser: Sendable {
       throw ParserError(message: "Binding request exceeds 128 MiB", diagnostics: .array([]))
     }
     let result = input.withUnsafeBytes { bytes in
-      octri_parser_call(bytes.bindMemory(to: UInt8.self).baseAddress, input.count)
+      native.call(bytes.bindMemory(to: UInt8.self).baseAddress, input.count)
     }
     guard let result else {
       throw ParserError(message: "Native parser returned a null buffer", diagnostics: .array([]))
     }
-    defer { octri_parser_buffer_free(result) }
-    let count = octri_parser_buffer_len(result)
-    guard let bytes = octri_parser_buffer_data(result) else {
+    defer { native.free(result) }
+    let count = native.length(result)
+    guard let bytes = native.data(result) else {
       throw ParserError(message: "Native parser returned null data", diagnostics: .array([]))
     }
     // Data copies before Rust releases its allocation.

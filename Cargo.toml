@@ -9,6 +9,8 @@ edition = "2024"
 rust-version = "1.95"
 authors = ["Octri contributors"]
 repository = "https://github.com/octridev/octri-openapi-parser"
+homepage = "https://octri.dev/openapi-parser"
+readme = "README.md"
 publish = false
 license = "Apache-2.0"
 
@@ -17,8 +19,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["unbounded_depth", "arbitrary_precision"] }
 url = { version = "2.5", features = ["serde"] }
 thiserror = "2.0"
-octri-parser = { path = "crates/octri-parser" }
-octri-parser-native = { path = "crates/octri-parser-native" }
+octri-parser = { path = "crates/octri-parser", version = "0.1.2" }
+octri-parser-native = { path = "crates/octri-parser-native", version = "0.1.2" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

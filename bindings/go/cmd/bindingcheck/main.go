@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	parser "github.com/octridev/octri-openapi-parser/bindings/go"
+	parser "github.com/octridev/octri-openapi-parser-go"
 	"os"
 )
 

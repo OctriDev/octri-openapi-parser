@@ -1,14 +1,14 @@
 import { execFileSync } from "node:child_process";
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { delimiter, join, resolve } from "node:path";
 import { rustEnvironment } from "./toolchain.mjs";
 import { checkElfPermissions } from "./binding-elf.mjs";
+import {
+  buildJniBridge,
+  findJavaHome,
+  libraryFile,
+  version,
+} from "./native-build.mjs";
 
 const root = process.cwd();
 if (process.platform === "win32")
@@ -17,12 +17,7 @@ if (process.platform === "win32")
   );
 const output = resolve("artifacts/bindings");
 mkdirSync(output, { recursive: true });
-const libraryName =
-  process.platform === "darwin"
-    ? "liboctri_parser_ffi.dylib"
-    : process.platform === "win32"
-      ? "octri_parser_ffi.dll"
-      : "liboctri_parser_ffi.so";
+const libraryName = libraryFile("octri_parser_ffi");
 export const library = resolve("target/release", libraryName);
 const run = (command, args, options = {}) =>
   execFileSync(
@@ -51,58 +46,18 @@ run(
 run("cargo", ["build", "--release", "--locked", "-p", "octri-parser-ffi"], {
   env: rustEnvironment(),
 });
-for (const target of [
-  "bindings/go/octri_parser.h",
-  "bindings/swift/Sources/COctri/include/octri_parser.h",
-]) {
-  mkdirSync(resolve(target, ".."), { recursive: true });
-  copyFileSync("bindings/c/include/octri_parser.h", target);
-}
+copyFileSync("bindings/c/include/octri_parser.h", "bindings/go/octri_parser.h");
 if (process.platform === "darwin")
   run("install_name_tool", ["-id", `@rpath/${libraryName}`, library]);
 
-let javaHome = process.env.JAVA_HOME;
-if (!javaHome && process.platform === "darwin") {
-  const homebrew =
-    "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home";
-  javaHome = existsSync(homebrew)
-    ? homebrew
-    : execFileSync("/usr/libexec/java_home", ["-v", "11+"], {
-        encoding: "utf8",
-      }).trim();
-}
-if (!javaHome) throw new Error("JAVA_HOME must point to JDK 11 or newer");
+const javaHome = findJavaHome();
 const javaEnv = {
   ...process.env,
   JAVA_HOME: javaHome,
   PATH: `${join(javaHome, "bin")}${delimiter}${process.env.PATH}`,
 };
-const jniLibrary = resolve(
-  "target/release",
-  process.platform === "darwin"
-    ? "liboctri_parser_jni.dylib"
-    : "liboctri_parser_jni.so",
-);
-const jniPlatform = process.platform === "darwin" ? "darwin" : "linux";
-run("clang", [
-  "-std=c11",
-  "-Wall",
-  "-Wextra",
-  "-Werror",
-  "-fPIC",
-  "-shared",
-  "-Ibindings/c/include",
-  `-I${join(javaHome, "include")}`,
-  `-I${join(javaHome, "include", jniPlatform)}`,
-  "bindings/java/native/bridge.c",
-  `-L${resolve("target/release")}`,
-  "-loctri_parser_ffi",
-  process.platform === "darwin"
-    ? "-Wl,-rpath,@loader_path"
-    : "-Wl,-rpath,$ORIGIN",
-  "-o",
-  jniLibrary,
-]);
+const jniLibrary = resolve("target/release", libraryFile("octri_parser_jni"));
+buildJniBridge(javaHome, resolve("target/release"), jniLibrary);
 // Docker COPY can replace a source with an older timestamp than cached classes.
 // Clean JVM outputs so neither bytecode targets nor public types survive stale.
 run(
@@ -127,9 +82,9 @@ const dependencies = readFileSync(
   join(output, "java-dependencies.txt"),
   "utf8",
 ).trim();
-const javaJar = resolve("bindings/java/target/openapi-parser-0.1.0.jar");
+const javaJar = resolve(`bindings/java/target/openapi-parser-${version}.jar`);
 const kotlinJar = resolve(
-  "bindings/kotlin/target/openapi-parser-kotlin-0.1.0.jar",
+  `bindings/kotlin/target/openapi-parser-kotlin-${version}.jar`,
 );
 run(
   "mvn",
@@ -183,17 +138,11 @@ run("go", ["build", "-o", resolve(output, "go-check"), "./cmd/bindingcheck"], {
   cwd: resolve("bindings/go"),
   env: goEnv,
 });
-const swiftLinkerArgs = [
-  "-Xlinker",
-  `-L${nativeDir}`,
-  "-Xlinker",
-  "-rpath",
-  "-Xlinker",
-  nativeDir,
-  ...(process.platform === "linux"
+// Swift loads the C ABI at runtime, so only the Linux segment policy applies.
+const swiftLinkerArgs =
+  process.platform === "linux"
     ? ["-Xlinker", "-z", "-Xlinker", "separate-code"]
-    : []),
-];
+    : [];
 run("swift", [
   "build",
   "-c",

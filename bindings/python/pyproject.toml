@@ -4,15 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "octri-openapi-parser"
-version = "0.1.0"
+version = "0.1.2"
 requires-python = ">=3.8"
 description = "Python bindings for Octri's Rust OpenAPI parser"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-octri_parser = ["py.typed"]
+octri_parser = ["py.typed", "native/*"]
 
 [project.urls]
 Repository = "https://github.com/octridev/octri-openapi-parser"

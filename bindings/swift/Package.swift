@@ -6,8 +6,8 @@ let package = Package(
   platforms: [.macOS(.v13)],
   products: [.library(name: "OctriOpenAPIParser", targets: ["OctriOpenAPIParser"])],
   targets: [
-    .systemLibrary(name: "COctri"),
-    .target(name: "OctriOpenAPIParser", dependencies: ["COctri"]),
+    // Release builds place each platform's native library under native/.
+    .target(name: "OctriOpenAPIParser", resources: [.copy("native")]),
     .executableTarget(
       name: "BindingCheck", dependencies: ["OctriOpenAPIParser"], path: "Tests/BindingCheck"),
     .testTarget(

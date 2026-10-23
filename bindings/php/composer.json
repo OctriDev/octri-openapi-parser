@@ -1,8 +1,8 @@
 {
   "name": "octri/openapi-parser",
   "description": "PHP bindings for Octri's Rust OpenAPI parser",
+  "keywords": ["openapi", "swagger", "parser", "validator"],
   "type": "library",
-  "version": "0.1.0",
   "license": "Apache-2.0",
   "require": {
     "php": ">=8.1",
