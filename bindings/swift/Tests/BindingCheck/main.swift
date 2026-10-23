@@ -4,7 +4,7 @@ import OctriOpenAPIParser
 @main
 struct Check {
   static func main() async throws {
-    let parser = try Parser()
+    let parser = try Parser(library: CommandLine.arguments[1])
     let unicode = try JSONValue.decode(
       Data("{\"é\":1,\"e\\u0301\":2,\"big\":18446744073709551615}".utf8))
     guard unicode["é"] == .integer(1), unicode["e\u{301}"] == .integer(2),

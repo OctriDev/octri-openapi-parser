@@ -15,7 +15,6 @@
 **/*.egg-info/
 bindings/*/target/
 bindings/go/octri_parser.h
-bindings/swift/Sources/COctri/include/octri_parser.h
 bindings/dart/pubspec.lock
 bindings/ruby/*.gem
 bindings/python/build/

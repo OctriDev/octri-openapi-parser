@@ -9,8 +9,11 @@ import java.nio.file.Path
  * thread. Use your application's dispatcher for large requests; coroutine cancellation cannot
  * terminate synchronous native execution.
  */
-class Parser(library: Path, jniBridge: Path) {
-  private val native = dev.octri.parser.Parser(library, jniBridge)
+class Parser private constructor(private val native: dev.octri.parser.Parser) {
+  /** Loads the native library pair packaged in the Java artifact for the current platform. */
+  constructor() : this(dev.octri.parser.Parser())
+
+  constructor(library: Path, jniBridge: Path) : this(dev.octri.parser.Parser(library, jniBridge))
 
   fun call(envelope: JsonNode): JsonNode = native.call(envelope)
 

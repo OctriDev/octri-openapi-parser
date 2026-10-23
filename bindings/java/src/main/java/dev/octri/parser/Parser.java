@@ -30,6 +30,11 @@ public final class Parser {
                 .build());
   }
 
+  /** Loads the native library pair packaged in this jar for the current platform. */
+  public Parser() throws IOException {
+    NativeBridge.loadBundled();
+  }
+
   public Parser(Path library, Path jniBridge) throws IOException {
     NativeBridge.load(library, jniBridge);
   }

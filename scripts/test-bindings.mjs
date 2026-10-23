@@ -323,7 +323,7 @@ const commands = [
     ["-d", "ffi.enable=true", "bindings/php/check.php", build.library],
   ],
   ["ruby", "ruby", ["bindings/ruby/check.rb", build.library]],
-  ["swift", build.swiftCheck, []],
+  ["swift", build.swiftCheck, [build.library]],
   ["dart", build.dartCheck, [build.library]],
 ];
 const selected = process.argv.slice(2);

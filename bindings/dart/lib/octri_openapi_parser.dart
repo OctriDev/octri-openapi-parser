@@ -3,6 +3,7 @@ import 'exact_json.dart';
 export 'exact_json.dart' show LosslessNumberException;
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 
 final class _Buffer extends Opaque {}
 
@@ -72,13 +73,33 @@ class Parser {
     'octri_parser_call',
   );
 
-  Parser(String library)
-      : _library =
-            DynamicLibrary.open(File(library).resolveSymbolicLinksSync()) {
+  /// Without a path, loads the library this package bundles for the host
+  /// platform. Compiled executables cannot resolve package files; pass the
+  /// library path there.
+  Parser([String? library])
+      : _library = DynamicLibrary.open(
+            File(library ?? _bundledLibrary()).resolveSymbolicLinksSync()) {
     final version = _library.lookupFunction<_VersionNative, _Version>(
       'octri_parser_abi_version',
     );
     if (version() != 1) throw StateError('Expected Octri native ABI version 1');
+  }
+
+  static String _bundledLibrary() {
+    final arch = switch (Abi.current()) {
+      Abi.linuxX64 || Abi.macosX64 => 'x64',
+      Abi.linuxArm64 || Abi.macosArm64 => 'arm64',
+      final abi => '$abi',
+    };
+    final os = Platform.isMacOS ? 'darwin' : Platform.operatingSystem;
+    final file =
+        Platform.isMacOS ? 'liboctri_parser_ffi.dylib' : 'liboctri_parser_ffi.so';
+    final uri = Isolate.resolvePackageUriSync(
+        Uri.parse('package:octri_openapi_parser/src/native/$os-$arch/$file'));
+    if (uri == null)
+      throw UnsupportedError(
+          'Package files are unavailable; pass the native library path');
+    return uri.toFilePath();
   }
 
   String callJson(Map<String, Object?> envelope) {

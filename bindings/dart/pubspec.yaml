@@ -1,6 +1,6 @@
 name: octri_openapi_parser
 description: Dart native bindings for the Octri Rust OpenAPI parser.
-version: 0.1.0
-publish_to: none
+version: 0.1.2
+repository: https://github.com/octridev/octri-openapi-parser
 environment:
   sdk: '>=3.4.0 <4.0.0'

@@ -12,6 +12,7 @@ import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { basename, delimiter, join, resolve } from "node:path";
 import { checkElfPermissions } from "./binding-elf.mjs";
+import { version } from "./native-build.mjs";
 
 const root = process.cwd();
 const build = JSON.parse(readFileSync("artifacts/bindings/build.json", "utf8"));
@@ -42,7 +43,12 @@ const run = (command, args, options = {}) =>
 const extract = (language) => {
   const target = join(directory, language);
   mkdirSync(target, { recursive: true });
-  run("tar", ["-xzf", join(release, `${language}-0.1.0.tar.gz`), "-C", target]);
+  run("tar", [
+    "-xzf",
+    join(release, `${language}-${version}.tar.gz`),
+    "-C",
+    target,
+  ]);
   return target;
 };
 const passed = [];
@@ -74,10 +80,12 @@ try {
   run("gem", [
     "install",
     "--local",
+    // Its dependencies come from the host Ruby; release-verify.mjs resolves them.
+    "--ignore-dependencies",
     "--no-document",
     "--install-dir",
     gems,
-    join(release, "octri-openapi-parser-0.1.0.gem"),
+    join(release, `octri-openapi-parser-${version}.gem`),
   ]);
   const gemPaths = run("ruby", [
     "-e",
@@ -179,11 +187,11 @@ try {
   mkdirSync(goConsumer);
   writeFileSync(
     join(goConsumer, "go.mod"),
-    `module consumer\n\ngo 1.23\nrequire github.com/octridev/octri-openapi-parser/bindings/go v0.0.0\nreplace github.com/octridev/octri-openapi-parser/bindings/go => ${go}\n`,
+    `module consumer\n\ngo 1.23\nrequire github.com/octridev/octri-openapi-parser-go v0.0.0\nreplace github.com/octridev/octri-openapi-parser-go => ${go}\n`,
   );
   writeFileSync(
     join(goConsumer, "main.go"),
-    'package main\nimport("os";p "github.com/octridev/octri-openapi-parser/bindings/go")\nfunc main(){r,e:=(p.Parser{}).Validate(p.Text(os.Args[1],"memory://consumer/api.yaml"),nil);if e!=nil||!r.Valid{panic(e)}}\n',
+    'package main\nimport("os";p "github.com/octridev/octri-openapi-parser-go")\nfunc main(){r,e:=(p.Parser{}).Validate(p.Text(os.Args[1],"memory://consumer/api.yaml"),nil);if e!=nil||!r.Valid{panic(e)}}\n',
   );
   run("go", ["run", ".", spec], {
     cwd: goConsumer,
@@ -221,7 +229,7 @@ try {
   );
   writeFileSync(
     join(swiftConsumer, "Sources/Consumer/main.swift"),
-    'import OctriOpenAPIParser\nlet p=try Parser()\nlet r=try p.validate(.text(CommandLine.arguments[1]))\nprecondition(r["valid"] == .bool(true))\n',
+    'import OctriOpenAPIParser\nlet p=try Parser(library:CommandLine.arguments[1])\nlet r=try p.validate(.text(CommandLine.arguments[2]))\nprecondition(r["valid"] == .bool(true))\n',
   );
   run(
     "swift",
@@ -229,16 +237,11 @@ try {
       "run",
       "-c",
       "release",
-      "-Xlinker",
-      `-L${native}`,
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      native,
       ...(process.platform === "linux"
         ? ["-Xlinker", "-z", "-Xlinker", "separate-code"]
         : []),
       "Consumer",
+      library,
       spec,
     ],
     { cwd: swiftConsumer },

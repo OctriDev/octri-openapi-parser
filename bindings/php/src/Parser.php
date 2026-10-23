@@ -45,9 +45,10 @@ final class Parser
 {
     private FFI $native;
 
-    public function __construct(string $library)
+    /** Without a path, loads the library bundled for this platform under native/. */
+    public function __construct(?string $library = null)
     {
-        $path = realpath($library);
+        $path = realpath($library ?? self::bundledLibrary());
         if ($path === false) {
             throw new InvalidArgumentException('Native library does not exist');
         }
@@ -60,6 +61,17 @@ final class Parser
         if ($this->native->octri_parser_abi_version() !== 1) {
             throw new RuntimeException('Expected Octri native ABI version 1');
         }
+    }
+
+    private static function bundledLibrary(): string
+    {
+        $arch = match (php_uname('m')) {
+            'x86_64', 'amd64' => 'x64',
+            'aarch64', 'arm64' => 'arm64',
+            default => php_uname('m'),
+        };
+        $file = PHP_OS_FAMILY === 'Darwin' ? 'liboctri_parser_ffi.dylib' : 'liboctri_parser_ffi.so';
+        return dirname(__DIR__) . '/native/' . strtolower(PHP_OS_FAMILY) . "-$arch/$file";
     }
 
     // Objects stay stdClass: decoding {} as [] would change JSON semantics.

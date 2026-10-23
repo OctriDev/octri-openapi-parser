@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ctypes
+import sys
 from . import _json as exact_json
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,6 +14,12 @@ Operation = Literal[
 ]
 JsonObject = Dict[str, Any]
 MAX_REQUEST_BYTES = 128 * 1024 * 1024
+# Platform wheels carry the native library next to this module.
+BUNDLED_LIBRARY = Path(__file__).with_name("native") / (
+    "liboctri_parser_ffi.dylib"
+    if sys.platform == "darwin"
+    else "liboctri_parser_ffi.so"
+)
 
 
 def _restore_report(report: JsonObject) -> JsonObject:
@@ -74,8 +81,9 @@ class Parser:
     Content never grants filesystem authority from its URI.
     """
 
-    def __init__(self, library: Union[str, Path]):
-        self._library = ctypes.CDLL(str(Path(library).resolve(strict=True)))
+    def __init__(self, library: Union[str, Path, None] = None):
+        path = Path(library) if library is not None else BUNDLED_LIBRARY
+        self._library = ctypes.CDLL(str(path.resolve(strict=True)))
         self._library.octri_parser_abi_version.restype = ctypes.c_uint32
         if self._library.octri_parser_abi_version() != 1:
             raise RuntimeError("Expected Octri native ABI version 1")

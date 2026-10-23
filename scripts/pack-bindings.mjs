@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { createHash } from "node:crypto";
 import { basename, join, resolve } from "node:path";
+import { version } from "./native-build.mjs";
 
 const run = (command, args, options = {}) =>
   execFileSync(command, args, { stdio: "inherit", ...options });
@@ -66,7 +67,7 @@ run(
     "build",
     "octri-openapi-parser.gemspec",
     "--output",
-    join(output, "octri-openapi-parser-0.1.0.gem"),
+    join(output, `octri-openapi-parser-${version}.gem`),
   ],
   { cwd: resolve("bindings/ruby") },
 );
@@ -78,13 +79,13 @@ for (const [name, files] of [
   ["dart", ["pubspec.yaml", "analysis_options.yaml", "lib"]],
   ["php", ["composer.json", "src"]],
 ]) {
-  run("tar", ["-czf", join(output, `${name}-0.1.0.tar.gz`), ...files], {
+  run("tar", ["-czf", join(output, `${name}-${version}.tar.gz`), ...files], {
     cwd: resolve("bindings", name),
   });
 }
 run("tar", [
   "-czf",
-  join(output, "rust-0.1.0.tar.gz"),
+  join(output, `rust-${version}.tar.gz`),
   "Cargo.toml",
   "Cargo.lock",
   "rust-toolchain.toml",
@@ -108,7 +109,7 @@ writeFileSync(
   join(output, "manifest.json"),
   JSON.stringify(
     {
-      version: "0.1.0",
+      version,
       abiVersion: 1,
       platform: process.platform,
       architecture: process.arch,
